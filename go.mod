@@ -1,4 +1,4 @@
-module muskeg/quote
+module github.com/muskeg/quote-api
 
 go 1.24.0
 
