@@ -1,0 +1,38 @@
+# Go build artifacts
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+coverage.out
+cover.out
+prof*.pprof
+
+# Build directories
+/bin/
+/build/
+/pkg/
+
+# Dependency directories (uncomment if you vendor dependencies)
+/vendor/
+/Godeps/
+
+# Go workspace (optional)
+/go.work
+
+# Editor/IDE files
+.idea/
+.vscode/
+*.iml
+*.swp
+*~
+.DS_Store
+
+# Environment files
+.env
+.env.*
+
+# Misc
+*.log
