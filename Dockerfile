@@ -32,6 +32,10 @@ USER appuser
 COPY --from=builder /app/quote-api .
 COPY --from=builder /app/quotes.json .
 
+# Set environment variables
+ENV PORT=8080
+ENV GIN_MODE=release
+
 # Expose API port
 EXPOSE 8080
 

@@ -1,7 +1,6 @@
-
 # Quotes API
 
-A simple RESTful API for managing inspirational quotes, built with Go and the Gin web framework. This API allows you to retrieve, add, and search quotes with persistent storage in a JSON file.
+A simple RESTful API for managing "inspirational" quotes, built with Go and the Gin web framework. This API allows you to retrieve, add, and search quotes with persistent storage in a JSON file.
 
 ## Features
 
@@ -66,11 +65,11 @@ Response:
 [
   {
     "id": "1",
-    "quote": "The only way to do great work is to love what you do."
+    "quote": "Oh great, another incident. Must be working as intended."
   },
   {
     "id": "2",
-    "quote": "Life is what happens when you're busy making other plans."
+    "quote": "Our uptime is mostly emotional."
   }
 ]
 ```
@@ -89,7 +88,7 @@ Response:
 ```json
 {
   "id": "2",
-  "quote": "Life is what happens when you're busy making other plans."
+  "quote": "Our uptime is mostly emotional."
 }
 ```
 
@@ -107,7 +106,7 @@ Response:
 ```json
 {
   "id": "1",
-  "quote": "The only way to do great work is to love what you do."
+  "quote": "Oh great, another incident. Must be working as intended."
 }
 ```
 
@@ -120,14 +119,14 @@ Example:
 ```bash
 curl -X POST http://localhost:8080/quotes \
   -H "Content-Type: application/json" \
-  -d '{"quote": "The only way to do great work is to love what you do."}'
+  -d '{"quote": "Oh great, another incident. Must be working as intended."}'
 ```
 
 Response:
 ```json
 {
   "id": "1",
-  "quote": "The only way to do great work is to love what you do."
+  "quote": "Oh great, another incident. Must be working as intended."
 }
 ```
 
@@ -139,11 +138,21 @@ Quotes are stored in a quotes.json file in the same directory as the application
 
 ```
 quote-api/
-├── main.go      # Application entry point and API implementation
-├── quotes.json  # Persistent storage for quotes
-├── go.mod       # Go module definition
-├── go.sum       # Go module checksum
-└── README.md    # Project documentation
+├── .gitignore          # Git ignore rules
+├── Dockerfile          # Docker container build instructions
+├── go.mod              # Go module definition and dependencies
+├── main.go             # Application entry point and API implementation
+├── README.md           # Project documentation
+├── config/
+│   └── config.yaml     # Application configuration file
+├── data/
+│   └── quotes.json     # Persistent storage for quotes
+├── .vscode/
+│   └── settings.json   # VS Code workspace settings
+└── quotes/
+    ├── handler.go      # HTTP request handlers for quotes
+    ├── model.go        # Quote data model and persistence logic
+    └── router.go       # API route definitions and middleware
 ```
 
 ## Dependencies
