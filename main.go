@@ -31,7 +31,7 @@ func main() {
 	)
 
 	viper.SetConfigName("config")
-	viper.AddConfigPath("./config")
+	viper.AddConfigPath("./data")
 	err := viper.ReadInConfig()
 
 	// Handle errors
