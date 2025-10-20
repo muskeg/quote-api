@@ -36,3 +36,6 @@ prof*.pprof
 
 # Misc
 *.log
+
+config.yaml
+quotes.json
