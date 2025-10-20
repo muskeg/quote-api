@@ -36,3 +36,6 @@ prof*.pprof
 
 # Misc
 *.log
+
+data/
+quote-api

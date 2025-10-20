@@ -7,11 +7,11 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy source code
+# Copy files
 COPY *.go ./
-COPY quotes.json ./
-
-RUN cat go.mod
+COPY quotes-default.json ./
+COPY entry.sh ./
+COPY config-default.yaml ./
 
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux go build -o quote-api .
@@ -29,11 +29,20 @@ RUN adduser -D -g '' appuser
 USER appuser
 
 # Copy binary from builder
-COPY --from=builder /app/quote-api .
-COPY --from=builder /app/quotes.json .
+COPY --chown=appuser:appuser --from=builder /app/quote-api .
+COPY --chown=appuser:appuser --from=builder /app/entry.sh .
+COPY --chown=appuser:appuser --from=builder /app/config-default.yaml .
+COPY --chown=appuser:appuser --from=builder /app/quotes-default.json .
 
-# Expose API port
-EXPOSE 8080
+# Set environment variables
+ENV PORT=8080
+ENV GIN_MODE=release
 
-# Run the application
-CMD ["./quote-api"]
+# Make entrypoint script executable
+RUN chmod +x /app/entry.sh
+
+# Declare persistent data directory
+VOLUME ["/app/data"]
+
+# Set entrypoint
+ENTRYPOINT ["/app/entry.sh"]

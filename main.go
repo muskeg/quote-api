@@ -11,6 +11,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 )
 
 // quote represents a single quote entity with a unique ID and quote text.
@@ -29,12 +30,20 @@ func main() {
 		ColorReset  = "\033[0m"  // Reset to default color
 	)
 
+	viper.SetConfigName("config")
+	viper.AddConfigPath("./data")
+	err := viper.ReadInConfig()
+
+	// Handle errors
+	if err != nil {
+	panic(fmt.Errorf("fatal error config file: %w", err))
+}
 	// Load the quotes from the JSON file
-	loadedQuotes, err := loadFromJSON("quotes.json")
+	loadedQuotes, err := loadFromJSON("./data/quotes.json")
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("Loaded quotes: %+v\n", loadedQuotes)
+	fmt.Printf("Loaded quotes: %+v\n\n", loadedQuotes)
 	quotes = loadedQuotes
 	
 	// Display a warning if no quotes were found in the file
@@ -42,19 +51,24 @@ func main() {
 		warningMessage := "No quotes found in quotes.json."
 		fmt.Printf("%sWARNING: %s%s\n", ColorYellow, warningMessage, ColorReset)
 		fmt.Println("add quotes using the POST /quotes endpoint.")
-		fmt.Println("Example curl command:")
+		fmt.Println("Example:")
 		fmt.Println(`curl -X POST http://localhost:8080/quotes \`)
 		fmt.Println(`  -H "Content-Type: application/json" \`)
-		fmt.Println(`  -d '{"quote": "The only way to do great work is to love what you do."}'`) 
+		fmt.Println(`  -d '{"quote": "If it builds, it ships."}'`) 
 	}
 
 	// Set up Gin router with API endpoints
+	trustedProxies := viper.GetStringSlice("trustedProxies")
+	if len(trustedProxies) == 0 {
+		trustedProxies = nil // Disable trusted proxies if none are configured
+	}
 	router := gin.Default()
+	router.SetTrustedProxies(trustedProxies)
 	router.GET("/quote", getRandomQuote)
 	router.GET("/quotes", getQuotes)
 	router.GET("/quote/:id", getQuoteByID)
 	router.POST("/quotes", addQuote)
-	router.Run(":8080")
+	router.Run()
 }
 
 // getQuotes handles GET /quotes requests by returning all available quotes.
@@ -121,7 +135,7 @@ func addQuote(c *gin.Context) {
 	c.IndentedJSON(http.StatusCreated, newQuote)
 
 	// Persist the updated quotes to the JSON file
-	if err := saveToJSON("quotes.json", quotes); err != nil {
+	if err := saveToJSON("./data/quotes.json", quotes); err != nil {
 		panic(err)
 	}
 	fmt.Println("Saved quotes to quotes.json")
