@@ -159,3 +159,24 @@ quote-api/
 
 - [Gin Web Framework](https://github.com/gin-gonic/gin) 
 - HTTP web framework - HTTP web framework
+
+## Docker Compose
+
+Run and test on Docker Compose
+
+```
+version: "3.8"
+
+services:
+  quote-api:
+    image: ghcr.io/muskeg/quote-api:main
+    container_name: quote-api
+    ports:
+      - "8080:8080"
+    environment:
+      GIN_MODE: "release" # Production mode, one of "debug", "release", or "test"
+      PORT: "8080" # Port inside the container
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+```
