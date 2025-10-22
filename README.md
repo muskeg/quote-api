@@ -139,31 +139,20 @@ Quotes are stored in a quotes.json file in the same directory as the application
 
 ```
 quote-api/
-├── .github/                # GitHub workflows and configuration
-│   └── workflows/
-│       └── semver.yml      # Semantic-release workflow for automated versioning
-├── .gitignore              # Git ignore rules
-├── .releaserc.json         # Semantic-release configuration
-├── CHANGELOG.md            # Project changelog (auto-generated)
-├── Dockerfile              # Docker container build instructions
-├── README.md               # Project documentation
-├── config-default.yaml     # Default application config (copied to data/ on first run)
-├── data/                   # Persistent storage for config and quotes (ignored by git)
-│   ├── config.yaml         # Application configuration (runtime, ignored)
-│   └── quotes.json         # Persistent storage for quotes (runtime, ignored)
-├── docker-compose.yml      # Docker Compose service definition
-├── entry.sh                # Entrypoint script for Docker
-├── go.mod                  # Go module definition and dependencies
-├── go.sum                  # Go module checksums
-├── main.go                 # Application entry point and API implementation
-├── quotes-default.json     # Default quotes (copied to data/ on first run)
-└── .vscode/                # VS Code workspace settings (optional, ignored by some setups)
+├── .gitignore          # Git ignore rules
+├── Dockerfile          # Docker container build instructions
+├── go.mod              # Go module definition and dependencies
+├── main.go             # Application entry point and API implementation
+├── README.md           # Project documentation
+├── config/
+│   └── config.yaml     # Application configuration file
+├── data/
+│   └── quotes.json     # Persistent storage for quotes
+└── quotes/
+    ├── handler.go      # HTTP request handlers for quotes
+    ├── model.go        # Quote data model and persistence logic
+    └── router.go       # API route definitions and middleware
 ```
-
-**Notes:**
-- Files and folders like `data/`, `.env`, build artifacts, and editor settings are ignored by git (see `.gitignore`).
-- The `.github/` directory contains CI/CD workflows, including semantic-release for automated versioning and changelog generation.
-- `CHANGELOG.md` is generated and updated automatically by semantic-release.
 
 ## Dependencies
 
