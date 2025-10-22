@@ -132,26 +132,24 @@ Response:
 
 ## Data Storage
 
-Quotes are stored in a quotes.json file in the same directory as the application. If the file doesn't exist, it will be created automatically with an empty array when the application starts.
+Quotes are stored in a quotes.json file in the data directory. If the file doesn't exist, it will be created automatically with an example array when the application starts.
 
 
 ## Project Structure
 
 ```
 quote-api/
-├── .gitignore          # Git ignore rules
-├── Dockerfile          # Docker container build instructions
-├── go.mod              # Go module definition and dependencies
-├── main.go             # Application entry point and API implementation
-├── README.md           # Project documentation
-├── config/
-│   └── config.yaml     # Application configuration file
-├── data/
-│   └── quotes.json     # Persistent storage for quotes
-└── quotes/
-    ├── handler.go      # HTTP request handlers for quotes
-    ├── model.go        # Quote data model and persistence logic
-    └── router.go       # API route definitions and middleware
+├── .gitignore
+├── Dockerfile              # Docker container build instructions
+├── README.md               # Project documentation
+├── config-default.yaml     # Default application config (copied to data/ on first run)
+├── docker-compose.yml      # Docker Compose service definition
+├── entry.sh                # Entrypoint script for Docker
+├── go.mod                  # Go module definition and dependencies
+├── go.sum                  # Go module checksums
+├── main.go                 # Application entry point and API implementation
+├── quotes-default.json     # Default quotes (copied to data/ on first run)
+
 ```
 
 ## Dependencies
