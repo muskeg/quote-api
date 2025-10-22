@@ -147,8 +147,6 @@ quote-api/
 │   └── config.yaml     # Application configuration file
 ├── data/
 │   └── quotes.json     # Persistent storage for quotes
-├── .vscode/
-│   └── settings.json   # VS Code workspace settings
 └── quotes/
     ├── handler.go      # HTTP request handlers for quotes
     ├── model.go        # Quote data model and persistence logic
