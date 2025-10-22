@@ -134,6 +134,7 @@ Response:
 
 Quotes are stored in a quotes.json file in the same directory as the application. If the file doesn't exist, it will be created automatically with an empty array when the application starts.
 
+
 ## Project Structure
 
 ```
@@ -157,3 +158,24 @@ quote-api/
 
 - [Gin Web Framework](https://github.com/gin-gonic/gin) 
 - HTTP web framework - HTTP web framework
+
+## Docker Compose
+
+Run and test on Docker Compose
+
+```
+version: "3.8"
+
+services:
+  quote-api:
+    image: ghcr.io/muskeg/quote-api:main
+    container_name: quote-api
+    ports:
+      - "8080:8080"
+    environment:
+      GIN_MODE: "release" # Production mode, one of "debug", "release", or "test"
+      PORT: "8080" # Port inside the container
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+```
