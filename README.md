@@ -132,7 +132,7 @@ Response:
 
 ## Data Storage
 
-Quotes are stored in a quotes.json file in the data directory. If the file doesn't exist, it will be created automatically with an example array when the application starts.
+Quotes are stored in a quotes.json file in a `data directory`. If the file doesn't exist, it will be created automatically with an example array when the application starts.
 
 
 ## Project Structure
