@@ -164,15 +164,19 @@ func getNextQuote(c *gin.Context) {
 
 	// Serve the quote at idx (wrap around)
 	quoteIdx := idx % len(quotes)
+	
+	// Set the cookie for the next index BEFORE sending the response
+	nextIdx := (quoteIdx + 1) % len(quotes)
+	// maxAge: 30 days, path: /, domain: (leave empty for current domain), 
+	// secure: false (allow HTTP), httpOnly: false (allow curl to store)
+	c.SetCookie("quoteIndex", fmt.Sprintf("%d", nextIdx), 3600*24*30, "/", "", false, false)
+	
+	// Now send the JSON response
 	c.IndentedJSON(http.StatusOK, gin.H{
 		"quote": quotes[quoteIdx],
 		"index": quoteIdx,
-		"nextIndex": (quoteIdx + 1) % len(quotes),
+		"nextIndex": nextIdx,
 	})
-
-	// Set the cookie for the next index
-	nextIdx := (quoteIdx + 1) % len(quotes)
-	c.SetCookie("quoteIndex", fmt.Sprintf("%d", nextIdx), 3600*24*30, "/", "", false, true)
 }
 
 // saveToJSON persists the quotes slice to a JSON file on disk.
