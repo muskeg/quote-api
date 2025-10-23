@@ -24,8 +24,6 @@ type quote struct {
 var quotes = []quote{
 }
 
-var currentQuote = 1;
-
 func main() {
 	const (
 		ColorYellow = "\033[33m" // Yellow foreground for warning messages
@@ -171,11 +169,11 @@ func getNextQuote(c *gin.Context) {
 	// secure: false (allow HTTP), httpOnly: false (allow curl to store)
 	c.SetCookie("quoteIndex", fmt.Sprintf("%d", nextIdx), 3600*24*30, "/", "", false, false)
 	
-	// Now send the JSON response
+	// Return flattened structure with nextIndex, id, and quote
 	c.IndentedJSON(http.StatusOK, gin.H{
-		"quote": quotes[quoteIdx],
-		"index": quoteIdx,
 		"nextIndex": nextIdx,
+		"id": quotes[quoteIdx].ID,
+		"quote": quotes[quoteIdx].Quote,
 	})
 }
 
