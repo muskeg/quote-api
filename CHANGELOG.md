@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.3](https://github.com/muskeg/quote-api/compare/v1.3.2...v1.3.3) (2025-10-23)
+
+
+### Bug Fixes
+
+* trying to fix docker workflow ([#19](https://github.com/muskeg/quote-api/issues/19)) ([c88e7e9](https://github.com/muskeg/quote-api/commit/c88e7e9889aa2ff3af0194ed352547e59df1d96f))
+
 ## [1.3.2](https://github.com/muskeg/quote-api/compare/v1.3.1...v1.3.2) (2025-10-23)
 
 
