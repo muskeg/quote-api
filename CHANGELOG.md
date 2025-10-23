@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/muskeg/quote-api/compare/v1.3.0...v1.3.1) (2025-10-23)
+
+
+### Bug Fixes
+
+* docker publishing workflow not triggered ([#15](https://github.com/muskeg/quote-api/issues/15)) ([a0ec780](https://github.com/muskeg/quote-api/commit/a0ec780259411d7aa3ccb1e33f5c5540dc1032db))
+
 ## [1.3.0](https://github.com/muskeg/quote-api/compare/v1.2.0...v1.3.0) (2025-10-23)
 
 
