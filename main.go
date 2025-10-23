@@ -24,6 +24,8 @@ type quote struct {
 var quotes = []quote{
 }
 
+var currentQuote = 1;
+
 func main() {
 	const (
 		ColorYellow = "\033[33m" // Yellow foreground for warning messages
@@ -67,7 +69,11 @@ func main() {
 	router.GET("/quote", getRandomQuote)
 	router.GET("/quotes", getQuotes)
 	router.GET("/quote/:id", getQuoteByID)
+	router.GET("/quote/next", getNextQuote)
 	router.POST("/quotes", addQuote)
+	router.GET("/health", func(c *gin.Context) {
+		c.Status(http.StatusOK)
+	})
 	router.Run()
 }
 
@@ -139,6 +145,12 @@ func addQuote(c *gin.Context) {
 		panic(err)
 	}
 	fmt.Println("Saved quotes to quotes.json")
+}
+
+func getNextQuote(c *gin.Context) {
+	// This is a placeholder implementation.
+	// In a real application, you would track the last served quote per user/session.
+	c.IndentedJSON(http.StatusNotImplemented, gin.H{"message": "Not implemented"})
 }
 
 // saveToJSON persists the quotes slice to a JSON file on disk.
