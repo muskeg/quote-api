@@ -110,6 +110,37 @@ Response:
 }
 ```
 
+
+#### Get the Next Quote (per client)
+```
+GET /quote/next
+```
+
+Returns the next quote in rotation for each client, tracked using a cookie. Each client receives quotes in order, independent of others.
+
+**Note:** The client must support cookies for this endpoint to work as intended. Browsers do this automatically. For curl or API clients, you must use the `-c` and `-b` options to store and send cookies.
+
+Example (with curl, storing cookies in `cookies.txt`):
+```bash
+curl -c cookies.txt -b cookies.txt http://localhost:8080/quote/next
+```
+
+Response:
+```json
+{
+  "quote": {
+    "id": "1",
+    "quote": "Oh great, another incident. Must be working as intended."
+  },
+  "index": 0,
+  "nextIndex": 1
+}
+```
+
+Subsequent requests from the same client will receive the next quote, and so on, wrapping around to the start after the last quote.
+
+---
+
 #### Add a New Quote
 ```
 POST /quotes
