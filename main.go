@@ -148,9 +148,31 @@ func addQuote(c *gin.Context) {
 }
 
 func getNextQuote(c *gin.Context) {
-	// This is a placeholder implementation.
-	// In a real application, you would track the last served quote per user/session.
-	c.IndentedJSON(http.StatusNotImplemented, gin.H{"message": "Not implemented"})
+	if len(quotes) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"message": "no quotes available"})
+		return
+	}
+
+	// Read the quoteIndex cookie
+	idx := 0
+	if cookie, err := c.Cookie("quoteIndex"); err == nil {
+		var parsed int
+		if _, err := fmt.Sscanf(cookie, "%d", &parsed); err == nil && parsed >= 0 {
+			idx = parsed
+		}
+	}
+
+	// Serve the quote at idx (wrap around)
+	quoteIdx := idx % len(quotes)
+	c.IndentedJSON(http.StatusOK, gin.H{
+		"quote": quotes[quoteIdx],
+		"index": quoteIdx,
+		"nextIndex": (quoteIdx + 1) % len(quotes),
+	})
+
+	// Set the cookie for the next index
+	nextIdx := (quoteIdx + 1) % len(quotes)
+	c.SetCookie("quoteIndex", fmt.Sprintf("%d", nextIdx), 3600*24*30, "/", "", false, true)
 }
 
 // saveToJSON persists the quotes slice to a JSON file on disk.
