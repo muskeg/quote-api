@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.6](https://github.com/muskeg/quote-api/compare/v1.3.5...v1.3.6) (2025-10-23)
+
+
+### Bug Fixes
+
+* fix the json structure for getNextQuote ([#25](https://github.com/muskeg/quote-api/issues/25)) ([182c2fd](https://github.com/muskeg/quote-api/commit/182c2fd12d0c61b3235f857c3b13f8eb1413d91c))
+
 ## [1.3.5](https://github.com/muskeg/quote-api/compare/v1.3.4...v1.3.5) (2025-10-23)
 
 
