@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.5](https://github.com/muskeg/quote-api/compare/v1.3.4...v1.3.5) (2025-10-23)
+
+
+### Bug Fixes
+
+* Fix cookie settings ([#23](https://github.com/muskeg/quote-api/issues/23)) ([c3f383c](https://github.com/muskeg/quote-api/commit/c3f383c5dbb1a27f53022ce39ea8f7faa6e9e26e))
+
 ## [1.3.4](https://github.com/muskeg/quote-api/compare/v1.3.3...v1.3.4) (2025-10-23)
 
 
