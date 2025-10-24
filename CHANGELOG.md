@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/muskeg/quote-api/compare/v1.3.6...v1.4.0) (2025-10-24)
+
+
+### Features
+
+* adds auto quotes reload and read-only switch ([#27](https://github.com/muskeg/quote-api/issues/27)) ([22632c6](https://github.com/muskeg/quote-api/commit/22632c662afc70102442f11ede7033ded9c401cc))
+
 ## [1.3.6](https://github.com/muskeg/quote-api/compare/v1.3.5...v1.3.6) (2025-10-23)
 
 
