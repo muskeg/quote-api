@@ -141,6 +141,27 @@ Subsequent requests from the same client will receive the next quote, and so on,
 
 ---
 
+#### Reload Quotes
+```
+POST /reload
+```
+
+Manually triggers a reload of the quotes from the `quotes.json` file. This is useful when you've updated the quotes file externally and want the API to pick up the changes immediately.
+
+Example:
+```bash
+curl -X POST http://localhost:8080/reload
+```
+
+Response:
+```json
+{
+  "message": "Quotes reloaded successfully"
+}
+```
+
+---
+
 #### Add a New Quote
 ```
 POST /quotes
@@ -158,6 +179,51 @@ Response:
 {
   "id": "1",
   "quote": "Oh great, another incident. Must be working as intended."
+}
+```
+
+## Configuration
+
+The API can be configured using the `data/config.yaml` file. The following options are available:
+
+### Read-Only Mode
+
+Set `readOnly: true` in your config file to disable all POST endpoints. This is useful for production deployments where you want to prevent modifications to the quote database.
+
+When enabled:
+- All POST requests return `405 Method Not Allowed`
+- GET requests continue to work normally
+- The server logs that it's running in read-only mode on startup
+
+Example config:
+```yaml
+trustedProxies: null
+readOnly: true
+```
+
+### Periodic Reload
+
+The API can automatically reload the `quotes.json` file at regular intervals. This is useful when the quotes file is updated externally.
+
+Set `reloadInterval` to the number of seconds between reloads (default: 60 seconds). Set to 0 to disable periodic reloading.
+
+Example config:
+```yaml
+trustedProxies: null
+readOnly: false
+reloadInterval: 30
+```
+
+You can also manually trigger a reload using the POST `/reload` endpoint:
+
+```bash
+curl -X POST http://localhost:8080/reload
+```
+
+Response:
+```json
+{
+  "message": "Quotes reloaded successfully"
 }
 ```
 
