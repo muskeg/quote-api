@@ -1,3 +1,9 @@
 trustedProxies: null
   # - 192.168.1.111
   # - "10.0.0.0/8"
+
+# Set to true to disable all POST endpoints (read-only mode)
+readOnly: false
+
+# Interval in seconds for periodic reloading of quotes.json (default: 60)
+reloadInterval: 60

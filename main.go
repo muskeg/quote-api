@@ -9,6 +9,8 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"sync"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -23,6 +25,9 @@ type quote struct {
 // quotes is the in-memory storage for all quotes loaded from the JSON file.
 var quotes = []quote{
 }
+
+// quotesMutex protects the quotes slice from concurrent access during reloads
+var quotesMutex sync.RWMutex
 
 func main() {
 	const (
@@ -64,26 +69,66 @@ func main() {
 	}
 	router := gin.Default()
 	router.SetTrustedProxies(trustedProxies)
+
+	// Check for read-only mode
+	readOnly := viper.GetBool("readOnly")
+	if readOnly {
+		fmt.Println("API running in read-only mode - POST requests will be disabled")
+	}
+
+	// Middleware to block POST requests in read-only mode
+	router.Use(func(c *gin.Context) {
+		if readOnly && c.Request.Method == "POST" {
+			c.JSON(http.StatusMethodNotAllowed, gin.H{"error": "API is in read-only mode"})
+			c.Abort()
+			return
+		}
+		c.Next()
+	})
+
 	router.GET("/quote", getRandomQuote)
 	router.GET("/quotes", getQuotes)
 	router.GET("/quote/:id", getQuoteByID)
 	router.GET("/quote/next", getNextQuote)
 	router.POST("/quotes", addQuote)
+	router.POST("/reload", func(c *gin.Context) {
+		if err := reloadQuotes(); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reload quotes"})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"message": "Quotes reloaded successfully"})
+	})
 	router.GET("/health", func(c *gin.Context) {
 		c.Status(http.StatusOK)
 	})
+	
+	// Start periodic reload in a goroutine
+	var wg sync.WaitGroup
+	wg.Add(1)
+	go periodicReload(&wg)
+	
 	router.Run()
 }
 
 // getQuotes handles GET /quotes requests by returning all available quotes.
 // Returns a 200 OK with the JSON array of all quotes.
 func getQuotes(c *gin.Context) {
+	quotesMutex.RLock()
+	defer quotesMutex.RUnlock()
 	c.IndentedJSON(http.StatusOK, quotes)
 }
 
 // getRandomQuote handles GET /quote requests by returning a random quote.
 // Returns a 200 OK with a randomly selected quote in JSON format.
 func getRandomQuote(c *gin.Context) {
+	quotesMutex.RLock()
+	defer quotesMutex.RUnlock()
+	
+	if len(quotes) == 0 {
+		c.JSON(http.StatusNotFound, gin.H{"message": "no quotes available"})
+		return
+	}
+	
 	randIndex := rand.Intn(len(quotes))
 	c.IndentedJSON(http.StatusOK, quotes[randIndex])
 }
@@ -97,6 +142,10 @@ func getRandomQuote(c *gin.Context) {
 //   - 404 Not Found if no quote with the given ID exists
 func getQuoteByID(c *gin.Context) {
 	id := c.Param("id")
+	
+	quotesMutex.RLock()
+	defer quotesMutex.RUnlock()
+	
 	for _, q := range quotes {
 		if q.ID == id {
 			c.IndentedJSON(http.StatusOK, q)
@@ -125,6 +174,8 @@ func addQuote(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request format"})
 		return
 	}
+	
+	quotesMutex.Lock()
 	// Generate ID based on the slice length
 	newID := fmt.Sprintf("%d", len(quotes)+1)
 
@@ -136,6 +187,8 @@ func addQuote(c *gin.Context) {
 
 	// Add to the in-memory quotes slice
 	quotes = append(quotes, newQuote)
+	quotesMutex.Unlock()
+	
 	c.IndentedJSON(http.StatusCreated, newQuote)
 
 	// Persist the updated quotes to the JSON file
@@ -146,7 +199,11 @@ func addQuote(c *gin.Context) {
 }
 
 func getNextQuote(c *gin.Context) {
-	if len(quotes) == 0 {
+	quotesMutex.RLock()
+	quoteLen := len(quotes)
+	quotesMutex.RUnlock()
+	
+	if quoteLen == 0 {
 		c.JSON(http.StatusNotFound, gin.H{"message": "no quotes available"})
 		return
 	}
@@ -161,20 +218,24 @@ func getNextQuote(c *gin.Context) {
 	}
 
 	// Serve the quote at idx (wrap around)
-	quoteIdx := idx % len(quotes)
+	quoteIdx := idx % quoteLen
 	
 	// Set the cookie for the next index BEFORE sending the response
-	nextIdx := (quoteIdx + 1) % len(quotes)
+	nextIdx := (quoteIdx + 1) % quoteLen
 	// maxAge: 30 days, path: /, domain: (leave empty for current domain), 
 	// secure: false (allow HTTP), httpOnly: false (allow curl to store)
 	c.SetCookie("quoteIndex", fmt.Sprintf("%d", nextIdx), 3600*24*30, "/", "", false, false)
 	
 	// Return flattened structure with nextIndex, id, and quote
-	c.IndentedJSON(http.StatusOK, gin.H{
+	quotesMutex.RLock()
+	response := gin.H{
 		"nextIndex": nextIdx,
 		"id": quotes[quoteIdx].ID,
 		"quote": quotes[quoteIdx].Quote,
-	})
+	}
+	quotesMutex.RUnlock()
+	
+	c.IndentedJSON(http.StatusOK, response)
 }
 
 // saveToJSON persists the quotes slice to a JSON file on disk.
@@ -238,4 +299,52 @@ func loadFromJSON(filename string) ([]quote, error) {
 	decoder := json.NewDecoder(file)
 	err = decoder.Decode(&loadedQuotes)
 	return loadedQuotes, err
+}
+
+// periodicReload periodically reloads the quotes from the JSON file at the specified interval.
+// It runs in a separate goroutine and updates the in-memory quotes slice.
+// The reload interval is configured via the "reloadInterval" setting (in seconds).
+func periodicReload(wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	// Get the reload interval from the config (default: 60 seconds)
+	interval := viper.GetInt("reloadInterval")
+	if interval <= 0 {
+		interval = 60
+	}
+
+	ticker := time.NewTicker(time.Duration(interval) * time.Second)
+	defer ticker.Stop()
+
+	for range ticker.C {
+		// Reload the quotes from the JSON file
+		loadedQuotes, err := loadFromJSON("./data/quotes.json")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error reloading quotes: %v\n", err)
+			continue
+		}
+
+		// Update the in-memory quotes slice
+		quotesMutex.Lock()
+		quotes = loadedQuotes
+		quotesMutex.Unlock()
+
+		fmt.Printf("Reloaded %d quotes from quotes.json\n", len(loadedQuotes))
+	}
+}
+
+// reloadQuotes reloads the quotes from the JSON file and updates the in-memory slice.
+// This function is thread-safe and can be called from any goroutine.
+func reloadQuotes() error {
+	loadedQuotes, err := loadFromJSON("./data/quotes.json")
+	if err != nil {
+		return err
+	}
+
+	quotesMutex.Lock()
+	quotes = loadedQuotes
+	quotesMutex.Unlock()
+
+	fmt.Printf("Manually reloaded %d quotes from quotes.json\n", len(loadedQuotes))
+	return nil
 }
