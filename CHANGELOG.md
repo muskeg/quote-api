@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/muskeg/quote-api/compare/v1.5.0...v1.5.1) (2025-10-25)
+
+
+### Bug Fixes
+
+* arm builds on release ([#32](https://github.com/muskeg/quote-api/issues/32)) ([fd4ba66](https://github.com/muskeg/quote-api/commit/fd4ba66d6f0703c7603da674c49bac935bd461dd))
+
 ## [1.5.0](https://github.com/muskeg/quote-api/compare/v1.4.0...v1.5.0) (2025-10-25)
 
 
