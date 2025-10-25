@@ -263,7 +263,7 @@ version: "3.8"
 
 services:
   quote-api:
-    image: ghcr.io/muskeg/quote-api:main
+    image: ghcr.io/muskeg/quote-api:1.4.0
     container_name: quote-api
     ports:
       - "8080:8080"
