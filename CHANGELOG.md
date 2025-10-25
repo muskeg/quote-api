@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.0](https://github.com/muskeg/quote-api/compare/v1.4.0...v1.5.0) (2025-10-25)
+
+
+### Features
+
+* multiplatform builds ([#29](https://github.com/muskeg/quote-api/issues/29)) ([88e3b9d](https://github.com/muskeg/quote-api/commit/88e3b9d7bd707a0540baabe7f34d00a06dfe98e2))
+
+
+### Bug Fixes
+
+* fix build platforms env ([#31](https://github.com/muskeg/quote-api/issues/31)) ([6446d4e](https://github.com/muskeg/quote-api/commit/6446d4e079bb3f830560d3cb46cf0dcf639ec500))
+
 ## [1.4.0](https://github.com/muskeg/quote-api/compare/v1.3.6...v1.4.0) (2025-10-24)
 
 
